@@ -1,12 +1,12 @@
-package processor;
+package previous;
 
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.stream.Stream;
 
-public class Main {
+public class Main1 {
 
-    public static void main(String[] args) {
+    public static void main_(String[] args) {
         MatrixProcessor.task1();
     }
 }
