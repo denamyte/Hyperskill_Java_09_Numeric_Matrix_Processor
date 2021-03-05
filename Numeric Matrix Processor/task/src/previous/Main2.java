@@ -1,32 +1,32 @@
-package processor;
+package previous;
 
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.stream.Stream;
 
-public class Main {
+public class Main2 {
 
-    public static void main(String[] args) {
-        MatrixProcessor.task2();
+    public static void main_(String[] args) {
+        MatrixProcessor2.task2();
     }
 }
 
-class MatrixProcessor {
+class MatrixProcessor2 {
 
     public static void task1() {
-        final var mtx1 = MatrixUtils.readIntMatrix();
-        final var mtx2 = MatrixUtils.readIntMatrix();
+        final var mtx1 = MatrixUtils2.readIntMatrix();
+        final var mtx2 = MatrixUtils2.readIntMatrix();
         if (!checkSizes(mtx1.length, mtx1[0].length, mtx2.length, mtx2[0].length)) {
             System.out.println("ERROR");
             return;
         }
-        MatrixUtils.printIntMatrix(sumIntMatrices(mtx1, mtx2));
+        MatrixUtils2.printIntMatrix(sumIntMatrices(mtx1, mtx2));
     }
 
     public static void task2() {
-        final var mtx = MatrixUtils.readIntMatrix();
-        int scalar = MatrixUtils.readInt();
-        MatrixUtils.printIntMatrix(scaleMatrix(mtx, scalar));
+        final var mtx = MatrixUtils2.readIntMatrix();
+        int scalar = MatrixUtils2.readInt();
+        MatrixUtils2.printIntMatrix(scaleMatrix(mtx, scalar));
     }
 
     public static boolean checkSizes(int h1, int w1, int h2, int w2) {
@@ -54,14 +54,14 @@ class MatrixProcessor {
     }
 }
 
-class MatrixUtils {
+class MatrixUtils2 {
 
     private static final Scanner SCANNER = new Scanner(System.in);
 
     public static int[][] readIntMatrix() {
         int rowCnt = SCANNER.nextInt();
         SCANNER.nextLine();
-        return Stream.generate(MatrixUtils::readIntRow).limit(rowCnt)
+        return Stream.generate(MatrixUtils2::readIntRow).limit(rowCnt)
                 .toArray(int[][]::new);
     }
 
@@ -74,7 +74,7 @@ class MatrixUtils {
         return Integer.parseInt(SCANNER.nextLine());
     }
 
-    public static void printIntMatrix(int[][] mtx) {
+    public static <T> void printIntMatrix(int[][] mtx) {
         StringBuilder sb = new StringBuilder();
         for (int[] row : mtx) {
             for (int value : row) {
