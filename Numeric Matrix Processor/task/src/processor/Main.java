@@ -1,42 +1,123 @@
 package processor;
 
+import java.text.DecimalFormat;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Scanner;
-import java.util.stream.Stream;
 
 public class Main {
 
     public static void main(String[] args) {
-        MatrixProcessor.task2();
+        new UserIO().mainLoop();
     }
+}
+
+class UserIO {
+
+    private static final Scanner SCANNER = new Scanner(System.in);
+    private static final String[] ordinals = {"", "first ", "second "};
+    private static final DecimalFormat DEC_FORMAT = new DecimalFormat("0.#");
+
+    private final Map<Integer, Runnable> actions = Map.of(
+            1, this::matrixAddition,
+            2, this::matrixScalarMultiplication,
+            3, this::matrixMatrixMultiplication
+    );
+    String result = "";
+
+    void mainLoop() {
+        int choice = -1;
+        while (choice != 0) {
+            doAction(choice);
+            showResult();
+            showMainMenu();
+            choice = readInt();
+        }
+    }
+
+    private void doAction(int choice) {
+        final Runnable runnable = actions.get(choice);
+        if (runnable != null) {
+            runnable.run();
+        }
+    }
+
+    private void showResult() {
+        if (!result.isEmpty()) {
+            System.out.println(result);;
+        }
+    }
+
+    private void showMainMenu() {
+        System.out.print("1. Add matrices\n2. Multiply matrix by a constant\n" +
+                                 "3. Multiply matrices\n0. Exit\nYour choice: ");
+    }
+
+    private void matrixAddition() {
+        var m1 = inputMatrix(1);
+        var m2 = inputMatrix(2);
+        result = MatrixProcessor.checkSizesForAddition(m1, m2)
+                ? matrixToString(MatrixProcessor.sumDoubleMatrices(m1, m2))
+                : "The operation cannot be performed.\n";
+    }
+
+    private void matrixScalarMultiplication() {
+
+    }
+
+    private void matrixMatrixMultiplication() {
+
+    }
+
+    private double[][] inputMatrix(int number) {
+        System.out.printf("Enter size of %smatrix: ", ordinals[number]);
+        int rows = readIntRow()[0];
+        double[][] mtx = new double[rows][];
+        System.out.printf("Enter %smatrix:%n", ordinals[number]);
+        for (int i = 0; i < rows; i++) {
+            mtx[i] = readDoubleRow();
+        }
+        return mtx;
+    }
+
+    static int readInt() {
+        return Integer.parseInt(SCANNER.nextLine());
+    }
+
+    static int[] readIntRow() {
+        return Arrays.stream(SCANNER.nextLine().split("\\s+"))
+                .mapToInt(Integer::parseInt).toArray();
+    }
+
+    static double[] readDoubleRow() {
+        return Arrays.stream(SCANNER.nextLine().split("\\s+"))
+                .mapToDouble(Double::parseDouble).toArray();
+    }
+
+    static String matrixToString(double[][] mtx) {
+        StringBuilder sb = new StringBuilder("The result is:\n");
+        for (double[] row : mtx) {
+            for (double value : row) {
+                sb.append(DEC_FORMAT.format(value)).append(' ');
+            }
+            sb.setLength(sb.length() - 1);
+            sb.append('\n');
+        }
+        return sb.toString();
+    }
+
 }
 
 class MatrixProcessor {
 
-    public static void task1() {
-        final var mtx1 = MatrixUtils.readIntMatrix();
-        final var mtx2 = MatrixUtils.readIntMatrix();
-        if (!checkSizes(mtx1.length, mtx1[0].length, mtx2.length, mtx2[0].length)) {
-            System.out.println("ERROR");
-            return;
-        }
-        MatrixUtils.printIntMatrix(sumIntMatrices(mtx1, mtx2));
+    public static boolean checkSizesForAddition(double[][] m1, double[][] m2) {
+        return m1.length == m2.length && m1[0].length == m2[0].length;
     }
 
-    public static void task2() {
-        final var mtx = MatrixUtils.readIntMatrix();
-        int scalar = MatrixUtils.readInt();
-        MatrixUtils.printIntMatrix(scaleMatrix(mtx, scalar));
-    }
-
-    public static boolean checkSizes(int h1, int w1, int h2, int w2) {
-        return h1 == h2 && w1 == w2;
-    }
-
-    public static int[][] sumIntMatrices(int[][] m1, int[][] m2) {
+    public static double[][] sumDoubleMatrices(double[][] m1, double[][] m2) {
         final int rows = m1.length;
         final int cols = m1[0].length;
-        int[][] sum = new int[rows][cols];
+        double[][] sum = new double[rows][cols];
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 sum[i][j] = m1[i][j] + m2[i][j];
@@ -51,39 +132,5 @@ class MatrixProcessor {
                         .map(v -> v * scalar)
                         .toArray())
                 .toArray(int[][]::new);
-    }
-}
-
-class MatrixUtils {
-
-    private static final Scanner SCANNER = new Scanner(System.in);
-
-    public static int[][] readIntMatrix() {
-        int rowCnt = SCANNER.nextInt();
-        SCANNER.nextLine();
-        return Stream.generate(MatrixUtils::readIntRow).limit(rowCnt)
-                .toArray(int[][]::new);
-    }
-
-    private static int[] readIntRow() {
-        return Arrays.stream(SCANNER.nextLine().split("\\s+"))
-                .mapToInt(Integer::parseInt).toArray();
-    }
-
-    public static int readInt() {
-        return Integer.parseInt(SCANNER.nextLine());
-    }
-
-    public static void printIntMatrix(int[][] mtx) {
-        StringBuilder sb = new StringBuilder();
-        for (int[] row : mtx) {
-            for (int value : row) {
-                sb.append(value).append(' ');
-            }
-            sb.setLength(sb.length() - 1);
-            sb.append('\n');
-        }
-        sb.setLength(sb.length() - 1);
-        System.out.println(sb);
     }
 }
