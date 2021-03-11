@@ -1,32 +1,26 @@
-package previous;
+package previous.stage1;
 
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.stream.Stream;
 
-public class Main2 {
+public class Main1 {
 
     public static void main_(String[] args) {
-        MatrixProcessor2.task2();
+        MatrixProcessor.task1();
     }
 }
 
-class MatrixProcessor2 {
+class MatrixProcessor {
 
     public static void task1() {
-        final var mtx1 = MatrixUtils2.readIntMatrix();
-        final var mtx2 = MatrixUtils2.readIntMatrix();
+        final var mtx1 = MatrixUtils.readIntMatrix();
+        final var mtx2 = MatrixUtils.readIntMatrix();
         if (!checkSizes(mtx1.length, mtx1[0].length, mtx2.length, mtx2[0].length)) {
             System.out.println("ERROR");
             return;
         }
-        MatrixUtils2.printIntMatrix(sumIntMatrices(mtx1, mtx2));
-    }
-
-    public static void task2() {
-        final var mtx = MatrixUtils2.readIntMatrix();
-        int scalar = MatrixUtils2.readInt();
-        MatrixUtils2.printIntMatrix(scaleMatrix(mtx, scalar));
+        MatrixUtils.printIntMatrix(sumIntMatrices(mtx1, mtx2));
     }
 
     public static boolean checkSizes(int h1, int w1, int h2, int w2) {
@@ -44,34 +38,22 @@ class MatrixProcessor2 {
         }
         return sum;
     }
-
-    public static int[][] scaleMatrix(int[][] m, int scalar) {
-        return Arrays.stream(m)
-                .map(row -> Arrays.stream(row)
-                        .map(v -> v * scalar)
-                        .toArray())
-                .toArray(int[][]::new);
-    }
 }
 
-class MatrixUtils2 {
+class MatrixUtils {
 
     private static final Scanner SCANNER = new Scanner(System.in);
 
     public static int[][] readIntMatrix() {
         int rowCnt = SCANNER.nextInt();
         SCANNER.nextLine();
-        return Stream.generate(MatrixUtils2::readIntRow).limit(rowCnt)
+        return Stream.generate(MatrixUtils::readIntRow).limit(rowCnt)
                 .toArray(int[][]::new);
     }
 
     private static int[] readIntRow() {
         return Arrays.stream(SCANNER.nextLine().split("\\s+"))
                 .mapToInt(Integer::parseInt).toArray();
-    }
-
-    public static int readInt() {
-        return Integer.parseInt(SCANNER.nextLine());
     }
 
     public static <T> void printIntMatrix(int[][] mtx) {

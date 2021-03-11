@@ -292,6 +292,21 @@ files:
 
     }
   learner_created: false
+- name: src/processor/MatrixProcessor.java
+  visible: true
+  learner_created: true
+- name: src/processor/UserIO.java
+  visible: true
+  learner_created: true
+- name: src/processor/stage3/_MatrixProcessor3.java
+  visible: true
+  learner_created: true
+- name: src/processor/stage3/_UserIO3.java
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/60/stages/325/implement#comment
-status: Unchecked
+status: Solved
+feedback:
+  message: Congratulations!
+  time: Thu, 11 Mar 2021 01:44:48 UTC
 record: -1
