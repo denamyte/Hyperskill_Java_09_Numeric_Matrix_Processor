@@ -1,28 +1,20 @@
-package processor;
+package previous.stage3;
 
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.function.Function;
 
 class UserIO {
 
     private static final Scanner SCANNER = new Scanner(System.in);
     private static final String[] ordinals = {"", "first ", "second "};
-    private final static Runnable noAction = () -> {};
-    private final static Function<double[][], double[][]> noTransposeAction = m -> m;
+    private final static Runnable noAction = () -> {
+    };
 
     private final Map<Integer, Runnable> actions = Map.of(
             1, this::matrixAddition,
             2, this::matrixScalarMultiplication,
-            3, this::matrixMatrixMultiplication,
-            4, this::transpositionMenu
-    );
-    private static final Map<Integer, Function<double[][], double[][]>> transposeActions = Map.of(
-            1, MatrixProcessor::mainDiagTransposition,
-            2, MatrixProcessor::secDiagonalTransposition,
-            3, MatrixProcessor::vertMirrorTransposition,
-            4, MatrixProcessor::horzMirrorTransposition
+            3, this::matrixMatrixMultiplication
     );
     String result = "";
 
@@ -49,7 +41,7 @@ class UserIO {
 
     private void showMainMenu() {
         System.out.print("1. Add matrices\n2. Multiply matrix by a constant\n" +
-                                 "3. Multiply matrices\n4. Transpose matrix\n0. Exit\nYour choice: ");
+                                 "3. Multiply matrices\n0. Exit\nYour choice: ");
     }
 
     private void matrixAddition() {
@@ -73,20 +65,6 @@ class UserIO {
         result = MatrixProcessor.checkSizesForMultiplication(m1, m2)
                 ? matrixToString(MatrixProcessor.multiplyMatrices(m1, m2))
                 : "The operation cannot be performed.\n";
-    }
-
-    private void transpositionMenu() {
-        showTranspositionMenu();
-        int choice = readInt();
-        double[][] m = inputMatrix(0);
-        result = MatrixProcessor.checkSizesForTransposition(m)
-                ? matrixToString(transposeActions.getOrDefault(choice, noTransposeAction).apply(m))
-                : "The operation cannot be performed.\n";
-    }
-
-    private void showTranspositionMenu() {
-        System.out.print("\n1. Main diagonal\n2. Side diagonal\n3. Vertical line\n" +
-                                   "4. Horizontal line\nYour choice: ");
     }
 
     private double[][] inputMatrix(int ordIndex) {

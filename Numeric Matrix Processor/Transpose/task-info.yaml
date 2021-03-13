@@ -400,6 +400,176 @@ files:
 
     }
   learner_created: false
+- name: src/processor/UserIO.java
+  visible: true
+  text: |
+    package processor;
+
+    import java.util.Arrays;
+    import java.util.Map;
+    import java.util.Scanner;
+
+    class UserIO {
+
+        private static final Scanner SCANNER = new Scanner(System.in);
+        private static final String[] ordinals = {"", "first ", "second "};
+        private final static Runnable noAction = () -> {
+        };
+
+        private final Map<Integer, Runnable> actions = Map.of(
+                1, this::matrixAddition,
+                2, this::matrixScalarMultiplication,
+                3, this::matrixMatrixMultiplication
+        );
+        String result = "";
+
+        void mainLoop() {
+            int choice = -1;
+            while (choice != 0) {
+                runAction(choice);
+                showResult();
+                showMainMenu();
+                choice = readInt();
+            }
+        }
+
+        private void runAction(int choice) {
+            actions.getOrDefault(choice, noAction).run();
+        }
+
+        private void showResult() {
+            if (!result.isEmpty()) {
+                System.out.println(result);
+                ;
+            }
+        }
+
+        private void showMainMenu() {
+            System.out.print("1. Add matrices\n2. Multiply matrix by a constant\n" +
+                                     "3. Multiply matrices\n0. Exit\nYour choice: ");
+        }
+
+        private void matrixAddition() {
+            var m1 = inputMatrix(1);
+            var m2 = inputMatrix(2);
+            result = MatrixProcessor.checkSizesForAddition(m1, m2)
+                    ? matrixToString(MatrixProcessor.addMatrices(m1, m2))
+                    : "The operation cannot be performed.\n";
+        }
+
+        private void matrixScalarMultiplication() {
+            var m = inputMatrix(0);
+            System.out.print("Enter constant: ");
+            double scalar = readDouble();
+            result = matrixToString(MatrixProcessor.scaleMatrix(m, scalar));
+        }
+
+        private void matrixMatrixMultiplication() {
+            var m1 = inputMatrix(1);
+            var m2 = inputMatrix(2);
+            result = MatrixProcessor.checkSizesForMultiplication(m1, m2)
+                    ? matrixToString(MatrixProcessor.multiplyMatrices(m1, m2))
+                    : "The operation cannot be performed.\n";
+        }
+
+        private double[][] inputMatrix(int ordIndex) {
+            System.out.printf("Enter size of %smatrix: ", ordinals[ordIndex]);
+            int rows = readIntRow()[0];
+            double[][] mtx = new double[rows][];
+            System.out.printf("Enter %smatrix:%n", ordinals[ordIndex]);
+            for (int i = 0; i < rows; i++) {
+                mtx[i] = readDoubleRow();
+            }
+            return mtx;
+        }
+
+        static int readInt() {
+            return Integer.parseInt(SCANNER.nextLine());
+        }
+
+        static double readDouble() {
+            return Double.parseDouble(SCANNER.nextLine());
+        }
+
+        static int[] readIntRow() {
+            return Arrays.stream(SCANNER.nextLine().split("\\s+"))
+                    .mapToInt(Integer::parseInt).toArray();
+        }
+
+        static double[] readDoubleRow() {
+            return Arrays.stream(SCANNER.nextLine().split("\\s+"))
+                    .mapToDouble(Double::parseDouble).toArray();
+        }
+
+        static String matrixToString(double[][] mtx) {
+            StringBuilder sb = new StringBuilder("The result is:\n");
+            for (double[] row : mtx) {
+                for (double value : row) {
+                    sb.append(value).append(' ');
+                }
+                sb.setLength(sb.length() - 1);
+                sb.append('\n');
+            }
+            return sb.toString();
+        }
+    }
+  learner_created: true
+- name: src/processor/MatrixProcessor.java
+  visible: true
+  text: |
+    package processor;
+
+    import java.util.Arrays;
+
+    class MatrixProcessor {
+
+        public static boolean checkSizesForAddition(double[][] m1, double[][] m2) {
+            return m1.length == m2.length && m1[0].length == m2[0].length;
+        }
+
+        public static boolean checkSizesForMultiplication(double[][] m1, double[][] m2) {
+            return m1[0].length == m2.length;
+        }
+
+        public static double[][] addMatrices(double[][] m1, double[][] m2) {
+            final int rows = m1.length;
+            final int cols = m1[0].length;
+            double[][] sum = new double[rows][cols];
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    sum[i][j] = m1[i][j] + m2[i][j];
+                }
+            }
+            return sum;
+        }
+
+        public static double[][] scaleMatrix(double[][] m, double scalar) {
+            return Arrays.stream(m)
+                    .map(row -> Arrays.stream(row)
+                            .map(v -> v * scalar)
+                            .toArray())
+                    .toArray(double[][]::new);
+        }
+
+        public static double[][] multiplyMatrices(double[][] m1, double[][] m2) {
+            final int rows = m1.length;
+            final int cols = m2[0].length;
+            final int commonSize = m2.length;
+            double[][] multi = new double[rows][cols];
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    for (int k = 0; k < commonSize; k++) {
+                        multi[i][j] += m1[i][k] * m2[k][j];
+                    }
+                }
+            }
+            return multi;
+        }
+    }
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/60/stages/326/implement#comment
-status: Unchecked
+status: Solved
+feedback:
+  message: Congratulations!
+  time: Sat, 13 Mar 2021 02:38:28 UTC
 record: -1
