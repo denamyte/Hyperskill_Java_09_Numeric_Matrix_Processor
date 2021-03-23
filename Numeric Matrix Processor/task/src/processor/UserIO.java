@@ -50,7 +50,6 @@ class UserIO {
     private void showResult() {
         if (!result.isEmpty()) {
             System.out.println(result);
-            ;
         }
     }
 
@@ -149,7 +148,7 @@ class UserIO {
                         .replace("-0 ", " 0 ");
                 sb.append(s).append("  ");
             }
-            sb.setLength(sb.length() - 1);
+            sb.setLength(sb.length() - 2);
             sb.append('\n');
         }
         return sb.toString();
