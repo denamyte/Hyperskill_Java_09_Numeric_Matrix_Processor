@@ -12,7 +12,7 @@ class MatrixProcessor {
         return m1[0].length == m2.length;
     }
 
-    public static boolean checkSizesForTransposition(double[][] m) {
+    public static boolean checkMatrixIsSquare(double[][] m) {
         return m.length == m[0].length;
     }
 
@@ -100,4 +100,20 @@ class MatrixProcessor {
         }
         return m;
     }
+
+    public static double matrixDeterminant(double[][] m) {
+        return new MatrixView(m).calculateDeterminant();
+    }
+
+    public static double[][] inverseMatrix(double[][] m) {
+        MatrixView matrixView = new MatrixView(m);
+        double det = matrixView.calculateDeterminant();
+        if (det == 0.0) {
+            return null;
+        }
+        double[][] cof = matrixView.calculateCofactors();
+        double[][] transCof = mainDiagTransposition(cof);
+        return scaleMatrix(transCof, 1 / det);
+    }
+
 }
