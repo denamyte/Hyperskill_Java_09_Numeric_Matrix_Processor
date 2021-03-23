@@ -435,6 +435,255 @@ files:
 
     }
   learner_created: false
+- name: src/processor/UserIO.java
+  visible: true
+  text: |
+    package processor;
+
+    import java.util.Arrays;
+    import java.util.Map;
+    import java.util.Scanner;
+    import java.util.function.Function;
+
+    class UserIO {
+
+        private static final Scanner SCANNER = new Scanner(System.in);
+        private static final String[] ordinals = {"", "first ", "second "};
+        private final static Runnable noAction = () -> {};
+        private final static Function<double[][], double[][]> noTransposeAction = m -> m;
+
+        private final Map<Integer, Runnable> actions = Map.of(
+                1, this::matrixAddition,
+                2, this::matrixScalarMultiplication,
+                3, this::matrixMatrixMultiplication,
+                4, this::transpositionMenu
+        );
+        private static final Map<Integer, Function<double[][], double[][]>> transposeActions = Map.of(
+                1, MatrixProcessor::mainDiagTransposition,
+                2, MatrixProcessor::secDiagonalTransposition,
+                3, MatrixProcessor::vertMirrorTransposition,
+                4, MatrixProcessor::horzMirrorTransposition
+        );
+        String result = "";
+
+        void mainLoop() {
+            int choice = -1;
+            while (choice != 0) {
+                runAction(choice);
+                showResult();
+                showMainMenu();
+                choice = readInt();
+            }
+        }
+
+        private void runAction(int choice) {
+            actions.getOrDefault(choice, noAction).run();
+        }
+
+        private void showResult() {
+            if (!result.isEmpty()) {
+                System.out.println(result);
+                ;
+            }
+        }
+
+        private void showMainMenu() {
+            System.out.print("1. Add matrices\n2. Multiply matrix by a constant\n" +
+                                     "3. Multiply matrices\n4. Transpose matrix\n0. Exit\nYour choice: ");
+        }
+
+        private void matrixAddition() {
+            var m1 = inputMatrix(1);
+            var m2 = inputMatrix(2);
+            result = MatrixProcessor.checkSizesForAddition(m1, m2)
+                    ? matrixToString(MatrixProcessor.addMatrices(m1, m2))
+                    : "The operation cannot be performed.\n";
+        }
+
+        private void matrixScalarMultiplication() {
+            var m = inputMatrix(0);
+            System.out.print("Enter constant: ");
+            double scalar = readDouble();
+            result = matrixToString(MatrixProcessor.scaleMatrix(m, scalar));
+        }
+
+        private void matrixMatrixMultiplication() {
+            var m1 = inputMatrix(1);
+            var m2 = inputMatrix(2);
+            result = MatrixProcessor.checkSizesForMultiplication(m1, m2)
+                    ? matrixToString(MatrixProcessor.multiplyMatrices(m1, m2))
+                    : "The operation cannot be performed.\n";
+        }
+
+        private void transpositionMenu() {
+            showTranspositionMenu();
+            int choice = readInt();
+            double[][] m = inputMatrix(0);
+            result = MatrixProcessor.checkSizesForTransposition(m)
+                    ? matrixToString(transposeActions.getOrDefault(choice, noTransposeAction).apply(m))
+                    : "The operation cannot be performed.\n";
+        }
+
+        private void showTranspositionMenu() {
+            System.out.print("\n1. Main diagonal\n2. Side diagonal\n3. Vertical line\n" +
+                                       "4. Horizontal line\nYour choice: ");
+        }
+
+        private double[][] inputMatrix(int ordIndex) {
+            System.out.printf("Enter size of %smatrix: ", ordinals[ordIndex]);
+            int rows = readIntRow()[0];
+            double[][] mtx = new double[rows][];
+            System.out.printf("Enter %smatrix:%n", ordinals[ordIndex]);
+            for (int i = 0; i < rows; i++) {
+                mtx[i] = readDoubleRow();
+            }
+            return mtx;
+        }
+
+        static int readInt() {
+            return Integer.parseInt(SCANNER.nextLine());
+        }
+
+        static double readDouble() {
+            return Double.parseDouble(SCANNER.nextLine());
+        }
+
+        static int[] readIntRow() {
+            return Arrays.stream(SCANNER.nextLine().split("\\s+"))
+                    .mapToInt(Integer::parseInt).toArray();
+        }
+
+        static double[] readDoubleRow() {
+            return Arrays.stream(SCANNER.nextLine().split("\\s+"))
+                    .mapToDouble(Double::parseDouble).toArray();
+        }
+
+        static String matrixToString(double[][] mtx) {
+            StringBuilder sb = new StringBuilder("The result is:\n");
+            for (double[] row : mtx) {
+                for (double value : row) {
+                    sb.append(value).append(' ');
+                }
+                sb.setLength(sb.length() - 1);
+                sb.append('\n');
+            }
+            return sb.toString();
+        }
+    }
+  learner_created: true
+- name: src/processor/MatrixProcessor.java
+  visible: true
+  text: |
+    package processor;
+
+    import java.util.Arrays;
+
+    class MatrixProcessor {
+
+        public static boolean checkSizesForAddition(double[][] m1, double[][] m2) {
+            return m1.length == m2.length && m1[0].length == m2[0].length;
+        }
+
+        public static boolean checkSizesForMultiplication(double[][] m1, double[][] m2) {
+            return m1[0].length == m2.length;
+        }
+
+        public static boolean checkSizesForTransposition(double[][] m) {
+            return m.length == m[0].length;
+        }
+
+        public static double[][] addMatrices(double[][] m1, double[][] m2) {
+            final int rows = m1.length;
+            final int cols = m1[0].length;
+            double[][] sum = new double[rows][cols];
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    sum[i][j] = m1[i][j] + m2[i][j];
+                }
+            }
+            return sum;
+        }
+
+        public static double[][] scaleMatrix(double[][] m, double scalar) {
+            return Arrays.stream(m)
+                    .map(row -> Arrays.stream(row)
+                            .map(v -> v * scalar)
+                            .toArray())
+                    .toArray(double[][]::new);
+        }
+
+        public static double[][] multiplyMatrices(double[][] m1, double[][] m2) {
+            final int rows = m1.length;
+            final int cols = m2[0].length;
+            final int commonSize = m2.length;
+            double[][] multi = new double[rows][cols];
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    for (int k = 0; k < commonSize; k++) {
+                        multi[i][j] += m1[i][k] * m2[k][j];
+                    }
+                }
+            }
+            return multi;
+        }
+
+        public static double[][] mainDiagTransposition(double[][] m) {
+            double temp;
+            for (int i = 0; i < m.length - 1; i++) {
+                for (int j = i; j < m.length; j++) {
+                    temp = m[i][j];
+                    m[i][j] = m[j][i];
+                    m[j][i] = temp;
+                }
+            }
+            return m;
+        }
+
+        public static double[][] secDiagonalTransposition(double[][] m) {
+            double temp;
+            for (int row = 0, col = m.length - 1; row < m.length - 1; row++, col--) {
+                for (int row2 = row + 1, col2 = col - 1; col2 >= 0; row2++, col2--) {
+                    temp = m[row][col2];
+                    m[row][col2] = m[row2][col];
+                    m[row2][col] = temp;
+                }
+            }
+            return m;
+        }
+
+        public static double[][] vertMirrorTransposition(double[][] m) {
+            double temp;
+            int center = m.length / 2;
+            for (int i = 0; i < m.length; i++) {
+                for (int j = 0, j2 = m.length - 1; j < center; j++, j2--) {
+                    temp = m[i][j];
+                    m[i][j] = m[i][j2];
+                    m[i][j2] = temp;
+                }
+            }
+            return m;
+        }
+
+        public static double[][] horzMirrorTransposition(double[][] m) {
+            double temp;
+            int center = m.length / 2;
+            for (int j = 0; j < m.length; j++) {
+                for (int i = 0, i2 = m.length - 1; i < center; i++, i2--) {
+                    temp = m[i][j];
+                    m[i][j] = m[i2][j];
+                    m[i2][j] = temp;
+                }
+            }
+            return m;
+        }
+    }
+  learner_created: true
+- name: src/processor/MatrixDeterminant.java
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/60/stages/327/implement#comment
-status: Unchecked
+status: Solved
+feedback:
+  message: Congratulations!
+  time: Mon, 22 Mar 2021 23:21:54 UTC
 record: -1
