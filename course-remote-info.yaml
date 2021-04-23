@@ -3,7 +3,7 @@ hyperskill_project:
   ide_files: https://stepik.org/media/attachments/lesson/210082/additional_files.json
   is_template_based: false
   use_ide: true
-update_date: Mon, 22 Mar 2021 22:13:00 UTC
+update_date: Thu, 22 Apr 2021 23:48:19 UTC
 stages:
 - id: 323
   step: 5465
@@ -142,8 +142,6 @@ topics:
     theory_id: 9184
   - title: Computer algorithms
     theory_id: 4953
-  - title: Introducing the first algorithm
-    theory_id: 10336
   - title: The big O notation
     theory_id: 4991
   - title: Data structures
