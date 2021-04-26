@@ -63,4 +63,21 @@ public class MatrixView {
         }
         return result;
     }
+
+    public static void main(String[] args) {
+        // Test calculateCofactors
+        double[][] mtx = new double[][]{
+            {1, 2, 1, 3},
+            {1, 0, 1, 1},
+            {1, -2, 1, 5},
+            {1, 7, 1, 5}
+        };
+        final double[][] cofactors = new MatrixView(mtx).calculateCofactors();
+        for (double[] row : cofactors) {
+            for (double value : row) {
+                System.out.print(value + "   ");
+            }
+            System.out.println();
+        }
+    }
 }
